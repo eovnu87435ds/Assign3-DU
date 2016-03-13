@@ -4,3 +4,26 @@ Husain Mandliwala
 Yong Seok Choi
 
 
+1. Open Hash Table implementation runs correctly for insert, delete, member.
+A random list of 1000 numbers from 0-10000 were entered into the hash table.
+That list was then shuffled and deleted. The output shows small operations and
+printed hash tables. After that, the statistics for the small operations, as well
+as the 1000 operations are shown.
+Statistics on 1000 count operation:
+number of inserts: 957
+number of deletes: 957
+number of insert probes: 46522
+number of delete probes: 23167
+average probes on insert: 48
+average probes on delete: 24
+
+2. Closed hash table does not run correctly. Closed hash table inserts properly,
+but does not delete all values. the problem is in the member function somewhere.
+The member function hashes the input value first.
+In the for loop it starts with that bucket, and checks it for the input value.
+The try block is necessary because an empty list(empty bucket) normally
+returns an index error. this passes the error instead of breaking the program.
+if it does not find it in the current bucket, it iterates the bucket
+number and continues the search. the last line is a mod 10 statement to keep
+the bucket search within the index of buckets.(wrap from 9 to 0)
+This is tried 10 times, at which point if nothing is found, returns False.

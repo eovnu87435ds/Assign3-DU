@@ -1,12 +1,15 @@
 import warnings
-import array
+import random
 
 class closedHash(object):
     def __init__(self):
         #this is the bucket list, where data gets stored.
         #using list of lists because python doesn't do fixed length arrays
         self.buckets = [[],[],[],[],[],[],[],[],[],[]]
-
+        self.inserts = 0;
+        self.insertprobes = 0;
+        self.deletes = 0;
+        self.deleteprobes = 0;
 
     def hash(self, input):
         #simple k mod m hash function. in this case k mod 10
@@ -20,6 +23,10 @@ class closedHash(object):
     def makenull(self):
         #sets the bucketlist empty
         self.buckets = [[],[],[],[],[],[],[],[],[],[]]
+        self.inserts = 0;
+        self.insertprobes = 0;
+        self.deletes = 0;
+        self.deleteprobes = 0;
 
     def member(self, input):
         #this 'could' just check the buckets in order, but hashing
@@ -33,6 +40,7 @@ class closedHash(object):
                 if self.buckets[currentBucket][0] == input:
                     return True
             except IndexError:
+                #print "error" + str(input) + " " + str(hashedinput)
                 pass
             continue
             currentBucket = currentBucket + 1
@@ -50,9 +58,13 @@ class closedHash(object):
         #wrapping (see the mod 10 line). If after trying all buckets it
         #does not find an empty one, it returns an error.
         currentBucket = hashedinput
+        probecount = 0
         for i in range(0,10):
+            probecount = probecount +1
             if len(self.buckets[currentBucket]) == 0:
                 self.buckets[currentBucket].append(input)
+                self.insertprobes = self.insertprobes + probecount
+                self.inserts = self.inserts + 1
                 return
             currentBucket = currentBucket + 1
             currentBucket = currentBucket % 10
@@ -63,11 +75,17 @@ class closedHash(object):
     def delete(self, input):
         if self.member(input) == False:
             warnings.warn('Delete failed: Member does not exist.')
+            #print("fail")
             return
         hashedinput = self.hash(input)
         currentBucket = hashedinput
-        for i in range(0,10):
+        probecount = 0
+        for i in range(0,11):
+            #print currentBucket
+            probecount = probecount + 1
             if self.buckets[currentBucket][0] == input:
+                self.deletes = self.deletes + 1
+                self.deleteprobes = self.deleteprobes + probecount
                 self.buckets[currentBucket].remove(input)
                 return
             currentBucket = currentBucket + 1
@@ -76,11 +94,23 @@ class closedHash(object):
 
 
 ch = closedHash()
-ch.insert(11)
+inputlist = []
+for i in range(0,10):
+    inputlist.append(random.randint(1,255))
+    #inputlist.append(6*i)
+print("Randomized List for testing: ")
+print inputlist
+print("Inserting items...")
+for item in inputlist:
+    ch.insert(item)
+ch.printTable()
+print("Shuffling list for deletions:")
+random.shuffle(inputlist)
+print inputlist
+print("Deleting items...")
+for item in inputlist:
+    ch.delete(item)
 ch.printTable()
 print
-ch.insert(21)
-ch.printTable()
-print(ch.member(41))
-ch.delete(21)
-ch.printTable()
+ch.delete(30)
+#ch.printTable()
